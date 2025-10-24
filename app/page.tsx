@@ -109,7 +109,7 @@ export default function Home() {
       )}
       {topicResult && (
         <div className="mt-6 text-center">
-          <h2 className="text-xl font-bold">🌐 Language Result</h2>
+          <h2 className="text-xl font-bold">🌐 Topic Result</h2>
           <pre>{JSON.stringify(topicResult, null, 2)}</pre>
         </div>
       )}

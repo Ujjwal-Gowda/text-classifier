@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000); // ⏱️ 20 seconds
   try {
     const { text } = await req.json();
 
@@ -14,7 +12,7 @@ export async function POST(req: Request) {
     }
     console.log(process.env.HF_TOKEN);
     const res = await fetch(
-      "https://router.huggingface.co/hf-inference/cic/tabularisai/multilingual-sentiment-analysis",
+      "https://router.huggingface.co/hf-inference/models/tabularisai/multilingual-sentiment-analysis",
       {
         headers: {
           Authorization: `Bearer ${process.env.HF_TOKEN}`,
@@ -24,7 +22,6 @@ export async function POST(req: Request) {
         method: "POST",
       },
     );
-    clearTimeout(timeout);
     if (!res.ok) {
       const errorData = await res.text();
       return NextResponse.json(
@@ -32,8 +29,8 @@ export async function POST(req: Request) {
         { status: res.status },
       );
     }
+
     const data = await res.json();
-    console.log(data);
     const prediction =
       Array.isArray(data) && Array.isArray(data[0]) ? data[0] : [];
     const top = prediction[0] || { label: "unknown", score: 0 };
@@ -42,10 +39,7 @@ export async function POST(req: Request) {
       confidence: top.score,
     });
   } catch (error) {
-    if (error.name === "AbortError") {
-      return NextResponse.json({ error: "Request timed out" }, { status: 504 });
-    }
-    console.error("Sentiment analysis  error:", error);
+    console.error("sentiment detection error:", error);
     return NextResponse.json({ error: "failed" }, { status: 500 });
   }
 }
