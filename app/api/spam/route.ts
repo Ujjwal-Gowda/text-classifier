@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
     console.log(process.env.HF_TOKEN);
     const res = await fetch(
-      "https://router.huggingface.co/hf-inference/cic/tabularisai/multilingual-sentiment-analysis",
+      "https://router.huggingface.co/hf-inference/models/mrm8488/bert-tiny-finetuned-sms-spam-detection",
       {
         headers: {
           Authorization: `Bearer ${process.env.HF_TOKEN}`,
@@ -37,15 +37,24 @@ export async function POST(req: Request) {
     const prediction =
       Array.isArray(data) && Array.isArray(data[0]) ? data[0] : [];
     const top = prediction[0] || { label: "unknown", score: 0 };
+    let spam = true;
+    let status = "";
+    if (top.score < 0.8) {
+      spam = true;
+      status = "spam";
+    } else {
+      spam = false;
+      status = "not a spam";
+    }
     return NextResponse.json({
-      sentiment: top.label,
+      sentiment: status,
       confidence: top.score,
     });
   } catch (error) {
     if (error.name === "AbortError") {
       return NextResponse.json({ error: "Request timed out" }, { status: 504 });
     }
-    console.error("Sentiment analysis  error:", error);
+    console.error("spam detection  error:", error);
     return NextResponse.json({ error: "failed" }, { status: 500 });
   }
 }

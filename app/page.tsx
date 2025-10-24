@@ -6,6 +6,7 @@ export default function Home() {
   const [text, setText] = useState("");
   const [langResult, setLangResult] = useState<any>(null);
   const [sentimentResult, setSentimentResult] = useState<any>(null);
+  const [spamResult, setSpamResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleLanguage = async () => {
@@ -22,6 +23,20 @@ export default function Home() {
     }
   };
 
+  const handleTopic = async () => {
+    try {
+      const res = await fetch("/api/topic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      setTopicResult(data);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   const handleSentiment = async () => {
     try {
       const res = await fetch("/api/sentiment", {
@@ -31,6 +46,20 @@ export default function Home() {
       });
       const data = await res.json();
       setSentimentResult(data);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleSpam = async () => {
+    try {
+      const res = await fetch("/api/spam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      setSpamResult(data);
     } catch (err: any) {
       setError(err.message);
     }
@@ -51,15 +80,21 @@ export default function Home() {
       <div className="mt-4 flex gap-4">
         <button
           onClick={handleLanguage}
-          className="bg-blue-500 px-4 py-2 rounded"
+          className="bg-yellow-500 px-4 py-2 rounded"
         >
           Detect Language
+        </button>
+        <button onClick={handleTopic} className="bg-blue-500 px-4 py-2 rounded">
+          Detect Topic
         </button>
         <button
           onClick={handleSentiment}
           className="bg-green-500 px-4 py-2 rounded"
         >
           Detect Sentiment
+        </button>
+        <button onClick={handleSpam} className="bg-red-500 px-4 py-2 rounded">
+          Detect Spam
         </button>
       </div>
 
@@ -71,7 +106,12 @@ export default function Home() {
           <pre>{JSON.stringify(langResult, null, 2)}</pre>
         </div>
       )}
-
+      {spamResult && (
+        <div className="mt-6 text-center">
+          <h2 className="text-xl font-bold">🌐 spam Result</h2>
+          <pre>{JSON.stringify(spamResult, null, 2)}</pre>
+        </div>
+      )}
       {sentimentResult && (
         <div className="mt-6 text-center">
           <h2 className="text-xl font-bold">💬 Sentiment Result</h2>
