@@ -1,61 +1,82 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
-  const [result, setResult] = useState<{
-    language?: string;
-    confidence?: number;
-    error?: string;
-  }>({});
   const [text, setText] = useState("");
-  const handlesubbmit = () => {
-    async function detectLanguage() {
-      try {
-        const res = await fetch("/api/language", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: text }),
-        });
+  const [langResult, setLangResult] = useState<any>(null);
+  const [sentimentResult, setSentimentResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-        const data = await res.json();
-        setResult(data); // ✅ save result in state
-      } catch (err: any) {
-        setResult({ error: err.message });
-      }
+  const handleLanguage = async () => {
+    try {
+      const res = await fetch("/api/language", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      setLangResult(data);
+    } catch (err: any) {
+      setError(err.message);
     }
-
-    detectLanguage();
   };
+
+  const handleSentiment = async () => {
+    try {
+      const res = await fetch("/api/sentiment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      setSentimentResult(data);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center font-sans bg-gray-900 text-white">
-      <h1 className="text-3xl mb-6">Language Detection Test</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-sans">
+      <h1 className="text-3xl mb-6">Text Classifier</h1>
+
       <input
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        placeholder="Enter text..."
+        className="border p-2 rounded text-white"
       />
-      <button onClick={handlesubbmit}>click here </button>
-      {/* Loading State */}
-      {!result.language && !result.error && (
-        <p className="text-gray-400">Detecting language...</p>
-      )}
 
-      {/* Success State */}
-      {result.language && (
-        <div className="text-center">
-          <p className="text-xl">
-            🌐 Detected language: <strong>{result.language}</strong>
-          </p>
-          <p className="text-gray-400 mt-2">
-            Confidence: {(result.confidence! * 100).toFixed(2)}%
-          </p>
+      <div className="mt-4 flex gap-4">
+        <button
+          onClick={handleLanguage}
+          className="bg-blue-500 px-4 py-2 rounded"
+        >
+          Detect Language
+        </button>
+        <button
+          onClick={handleSentiment}
+          className="bg-green-500 px-4 py-2 rounded"
+        >
+          Detect Sentiment
+        </button>
+      </div>
+
+      {error && <p className="text-red-400 mt-4">Error: {error}</p>}
+
+      {langResult && (
+        <div className="mt-6 text-center">
+          <h2 className="text-xl font-bold">🌐 Language Result</h2>
+          <pre>{JSON.stringify(langResult, null, 2)}</pre>
         </div>
       )}
 
-      {/* Error State */}
-      {result.error && (
-        <p className="text-red-400 mt-4">Error: {result.error}</p>
+      {sentimentResult && (
+        <div className="mt-6 text-center">
+          <h2 className="text-xl font-bold">💬 Sentiment Result</h2>
+          <pre>{JSON.stringify(sentimentResult, null, 2)}</pre>
+        </div>
       )}
     </div>
   );
