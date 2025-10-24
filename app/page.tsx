@@ -7,6 +7,7 @@ export default function Home() {
   const [langResult, setLangResult] = useState<any>(null);
   const [sentimentResult, setSentimentResult] = useState<any>(null);
   const [spamResult, setSpamResult] = useState<any>(null);
+  const [topicResult, setTopicResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleLanguage = async () => {
@@ -104,6 +105,12 @@ export default function Home() {
         <div className="mt-6 text-center">
           <h2 className="text-xl font-bold">🌐 Language Result</h2>
           <pre>{JSON.stringify(langResult, null, 2)}</pre>
+        </div>
+      )}
+      {topicResult && (
+        <div className="mt-6 text-center">
+          <h2 className="text-xl font-bold">🌐 Language Result</h2>
+          <pre>{JSON.stringify(topicResult, null, 2)}</pre>
         </div>
       )}
       {spamResult && (
