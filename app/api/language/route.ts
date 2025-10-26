@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
     console.log(process.env.HF_TOKEN);
     const res = await fetch(
-      "https://router.huggingface.co/hf-inference/models/papluca/xlm-roberta-base-language-detection",
+      "https://router.huggingface.co/hf-inference/models/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
       {
         headers: {
           Authorization: `Bearer ${process.env.HF_TOKEN}`,
