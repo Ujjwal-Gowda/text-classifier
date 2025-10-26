@@ -97,7 +97,12 @@ export async function POST(req: Request) {
       confidence: confidence,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    if (error instanceof Error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+      });
+    }
+    return new Response(JSON.stringify({ error: String(error) }), {
       status: 500,
     });
   }

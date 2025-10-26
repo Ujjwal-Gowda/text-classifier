@@ -37,13 +37,10 @@ export async function POST(req: Request) {
     const prediction =
       Array.isArray(data) && Array.isArray(data[0]) ? data[0] : [];
     const top = prediction[0] || { label: "unknown", score: 0 };
-    let spam = true;
     let status = "";
     if (top.score < 0.8) {
-      spam = true;
       status = "spam";
     } else {
-      spam = false;
       status = "not a spam";
     }
     return NextResponse.json({
@@ -51,10 +48,8 @@ export async function POST(req: Request) {
       confidence: top.score,
     });
   } catch (error) {
-    if (error.name === "AbortError") {
+    if (error instanceof Error && error.name === "AbortError") {
       return NextResponse.json({ error: "Request timed out" }, { status: 504 });
     }
-    console.error("spam detection  error:", error);
-    return NextResponse.json({ error: "failed" }, { status: 500 });
   }
 }
