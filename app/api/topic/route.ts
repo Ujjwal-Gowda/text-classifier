@@ -42,10 +42,19 @@ export async function POST(req: Request) {
     console.log("HF response:", data);
     const topic = data?.labels?.[0] || "Unknown";
     const confidence = data?.scores?.[0] || null;
+    console.log(topic, confidence);
 
+    let score = "";
+    if (!confidence == null) {
+      if (confidence <= 50) {
+        score = "weak";
+      } else {
+        score = "strong";
+      }
+    }
     return NextResponse.json({
       topic: topic,
-      confidence: confidence,
+      confidence: score,
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
