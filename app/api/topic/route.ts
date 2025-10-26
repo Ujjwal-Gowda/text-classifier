@@ -26,6 +26,7 @@ export async function POST(req: Request) {
         parameters: {
           candidate_labels: [
             "Technology",
+            "Science",
             "Sports",
             "Politics",
             "Health",
@@ -33,6 +34,53 @@ export async function POST(req: Request) {
             "Entertainment",
             "Education",
             "Environment",
+            "General",
+            "Greeting",
+            "Finance",
+            "Economy",
+            "Artificial Intelligence",
+            "Cybersecurity",
+            "Startups",
+            "Gaming",
+            "Movies",
+            "Music",
+            "Travel",
+            "Food",
+            "Lifestyle",
+            "Fashion",
+            "Art",
+            "History",
+            "Culture",
+            "Religion",
+            "Space",
+            "Climate Change",
+            "Social Issues",
+            "Technology News",
+            "Productivity",
+            "Programming",
+            "Hardware",
+            "Software",
+            "Mobile",
+            "Education Policy",
+            "Online Learning",
+            "Sports Events",
+            "Fitness",
+            "Mental Health",
+            "Medicine",
+            "Public Policy",
+            "Crime",
+            "Weather",
+            "World News",
+            "Local News",
+            "Humor",
+            "Motivation",
+            "Relationships",
+            "Career",
+            "Finance Tips",
+            "Real Estate",
+            "Cryptocurrency",
+            "Stock Market",
+            "Economics",
           ],
         },
       }),
@@ -44,17 +92,9 @@ export async function POST(req: Request) {
     const confidence = data?.scores?.[0] || null;
     console.log(topic, confidence);
 
-    let score = "";
-    if (!confidence == null) {
-      if (confidence <= 50) {
-        score = "weak";
-      } else {
-        score = "strong";
-      }
-    }
     return NextResponse.json({
       topic: topic,
-      confidence: score,
+      confidence: confidence,
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
